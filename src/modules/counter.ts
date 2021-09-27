@@ -1,31 +1,31 @@
 const INCREASE = 'counter/INCREASE' as const;
 const DECREASE = 'counter/DECREASE' as const;
-const INCREASE_BY = 'counter/INCREASE_BY' as const;
+const SET_COUNT = 'counter/SET_COUNT' as const;
 
-export const increase = () => ({
-  type: INCREASE
+export const increase = (idx: number) => ({
+  type: INCREASE,
+  payload: idx
 });
 
-export const decrease = () => ({
-  type: DECREASE
+export const decrease = (idx: number) => ({
+  type: DECREASE,
+  payload: idx
 });
 
-export const increaseBy = (diff: number) => ({
-  type: INCREASE_BY,
-  payload: diff
+export const setMovieCnt = (arr: number[]) => ({
+  type: SET_COUNT,
+  payload: arr
 });
 
 type CounterAction =
   | ReturnType<typeof increase>
   | ReturnType<typeof decrease>
-  | ReturnType<typeof increaseBy>;
+  | ReturnType<typeof setMovieCnt>;
 
-type CounterState = {
-  count: number;
-};
+type CounterState = { count: number[] };
 
 const initialState: CounterState = {
-  count: 0
+  count: [0, 0]
 };
 
 function counter(
@@ -34,11 +34,27 @@ function counter(
 ): CounterState {
   switch (action.type) {
     case INCREASE: 
-      return { count: state.count + 1 };
+      return { 
+        count: state.count.map((cnt, idx) => {
+          if (idx === action.payload) {
+            return cnt += 1;
+          }else {
+            return cnt
+          }
+        }) 
+      };
     case DECREASE:
-      return { count: state.count - 1 };
-    case INCREASE_BY:
-      return { count: state.count + action.payload };
+      return { 
+        count: state.count.map((cnt, idx) => {
+          if (idx === action.payload) {
+            return cnt -= 1;
+          }else {
+            return cnt
+          }
+        }) 
+      };
+    case SET_COUNT:
+      return { count: action.payload };
     default:
       return state;
   }
